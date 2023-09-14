@@ -9,6 +9,12 @@ Render Plantuml codeblocks in mkdocs without sending sensitive diagrams to a pub
 ```yaml
 plugins:
   - plantuml-local
+markdown_extensions:
+  - pymdownx.superfences:
+      custom_fences:
+        - name: plantuml
+          class: plantuml
+          format: !!python/name:pymdownx.superfences.fence_code_format
 ```
 
 **All**
@@ -22,6 +28,12 @@ plugins:
       # background_colour sets the background
       # fill colour used, defaults to `transparent`
       background_colour: white
+markdown_extensions:
+  - pymdownx.superfences:
+      custom_fences:
+        - name: puml
+          class: puml
+          format: !!python/name:pymdownx.superfences.fence_code_format
 ```
 
 ## Licence

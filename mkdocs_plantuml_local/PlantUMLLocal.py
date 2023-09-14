@@ -1,17 +1,16 @@
+from lxml import etree
+import mkdocs.config.config_options
+import mkdocs.config.defaults
+import mkdocs.exceptions
+import mkdocs.plugins
+import mkdocs.structure.files
+import mkdocs.structure.pages
+import os
 import re
 import shutil
 import subprocess
 import tempfile
-from os import listdir
-from typing import Literal
-
-import mkdocs.config.config_options
-import mkdocs.exceptions
-import mkdocs.plugins
-import mkdocs.structure.pages
-import mkdocs.structure.files
-from mkdocs.config.defaults import MkDocsConfig
-from os.path import join, dirname
+import time
 
 
 class PlantUMLLocalConfig(mkdocs.config.base.Config):
@@ -23,43 +22,63 @@ class PlantUMLLocal(mkdocs.plugins.BasePlugin[PlantUMLLocalConfig]):
     def __init__(self):
         self._dependencies_checked = False
         self.plantuml_block = None
-        self.plantuml_contents = None
+        self.logger = mkdocs.plugins.get_plugin_logger(__name__)
 
-    def on_config(self, config: MkDocsConfig) -> MkDocsConfig | None:
-        self.plantuml_block = re.compile(rf"(```{self.config.shortname}.+?```)", flags=re.DOTALL)
-        self.plantuml_contents = re.compile(rf"```{self.config.shortname}(.+?)```", flags=re.DOTALL)
+    def on_config(
+            self,
+            config: mkdocs.config.defaults.MkDocsConfig
+    ) -> mkdocs.config.defaults.MkDocsConfig | None:
+        self.plantuml_block = re.compile(rf'<pre class="{self.config.shortname}"')
 
-    def on_page_markdown(self,
-                         markdown: str,
-                         page: mkdocs.structure.pages.Page,
-                         config: MkDocsConfig,
-                         files: mkdocs.structure.files.Files):
-        log = mkdocs.plugins.get_plugin_logger(__name__)
-        self._check_dependencies()
+    def on_post_page(self,
+                     output: str,
+                     *,
+                     page: mkdocs.structure.pages.Page,
+                     config: mkdocs.config.defaults.MkDocsConfig) -> str | None:
+        if self.plantuml_block.findall(output):
+            self._check_dependencies()
+            html = etree.HTML(output)
 
-        documents = self.plantuml_block.findall(markdown)
+            plantuml_blocks = html.cssselect('pre.plantuml')
 
-        if documents:
-            log.info(f'Found {len(documents)} plantuml block(s) in {page.file.src_path}')
+            for index, block in enumerate(plantuml_blocks):
+                plantuml_code = block.cssselect('code')[0]
+                plantuml = ''.join(plantuml_code.itertext())
+                start_time = time.time() * 1000
+                svg = self._render_svg(plantuml)
+                end_time = time.time() * 1000
+                self.logger.info(f'Rendered diagram {index+1} '
+                                 f'of page {page.file.src_path} '
+                                 f'in {end_time - start_time}ms')
+                block.getparent().replace(block, svg)
 
-        for document in documents:
-            with tempfile.TemporaryDirectory() as temp:
-                plantuml = self.plantuml_contents.findall(document)[0]
-                plantuml = plantuml.split("\n")
-                plantuml.insert(2, f'skinparam backgroundcolor {self.config.background_colour}')
-                plantuml = "\n".join(plantuml)
-                puml_path = join(temp, 'diagram.puml')
-                self._write_file(puml_path, plantuml)
+            return etree.tostring(html, encoding=str, method="html")
 
-                subprocess.run(f'java -jar {dirname(__file__)}/plantuml.jar {puml_path} -tsvg',
-                               shell=True)
+        return output
 
-                svg_path = join(temp, next(file for file in listdir(temp) if file.endswith('.svg')))
-                svg = self._read_file(svg_path)
-                svg = svg.replace('<?xml version="1.0" encoding="us-ascii" standalone="no"?>', '')
-                markdown = markdown.replace(document, svg)
+    def _render_svg(self, plantuml):
+        with tempfile.TemporaryDirectory() as temp:
+            plantuml = plantuml.split("\n")
+            plantuml.insert(2, f'skinparam backgroundcolor {self.config.background_colour}')
+            plantuml = "\n".join(plantuml)
+            puml_path = os.path.join(temp, 'diagram.puml')
+            self._write_file(puml_path, plantuml)
 
-        return markdown
+            proc = subprocess.run(f"{shutil.which('java')} -jar "
+                                  f"{os.path.dirname(__file__)}/plantuml.jar "
+                                  f"{puml_path} "
+                                  "-tsvg".split(' '))
+
+            if proc.returncode != 0:
+                self.logger.error(proc.stderr)
+                raise mkdocs.exceptions.PluginError('PlantUML failed to build the diagram, check '
+                                                    'the logs above for more information.')
+
+            svg_path = os.path.join(temp, next(
+                file for file in os.listdir(temp) if file.endswith('.svg')))
+            svg = self._read_file(svg_path)
+            svg = svg.replace('<?xml version="1.0" encoding="us-ascii" standalone="no"?>', '')
+            return etree.XML(svg)
 
     def _check_dependencies(self):
         if not self._dependencies_checked:
