@@ -1,0 +1,29 @@
+[tool.poetry]
+name = "mkdocs-plantuml-local"
+version = "0.1.0"
+description = "Render PlantUML diagrams without sending sensitive data to a public server"
+authors = ["Lawrence <lawrence@acode.ninja>"]
+license = "MIT"
+readme = "README.md"
+
+packages = [
+    { include = "mkdocs_plantuml_local" }
+]
+include = [
+    { path = "mkdocs_plantuml_local/plantuml.jar", format = ["sdist", "wheel"] }
+]
+
+[tool.poetry.plugins."mkdocs.plugins"]
+"plantuml-local" = "mkdocs_plantuml_local.PlantUMLLocal:PlantUMLLocal"
+
+[tool.poetry.build]
+generate-setup-file = false
+script = "build.py"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+mkdocs = "^1.5.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
