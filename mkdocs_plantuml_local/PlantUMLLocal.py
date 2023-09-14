@@ -1,9 +1,12 @@
 import re
+import shutil
 import subprocess
 import tempfile
 from os import listdir
+from typing import Literal
 
 import mkdocs.config.config_options
+import mkdocs.exceptions
 import mkdocs.plugins
 import mkdocs.structure.pages
 import mkdocs.structure.files
@@ -17,24 +20,31 @@ class PlantUMLLocalConfig(mkdocs.config.base.Config):
 
 
 class PlantUMLLocal(mkdocs.plugins.BasePlugin[PlantUMLLocalConfig]):
+    def __init__(self):
+        self._dependencies_checked = False
+        self.plantuml_block = None
+        self.plantuml_contents = None
+
+    def on_config(self, config: MkDocsConfig) -> MkDocsConfig | None:
+        self.plantuml_block = re.compile(rf"(```{self.config.shortname}.+?```)", flags=re.DOTALL)
+        self.plantuml_contents = re.compile(rf"```{self.config.shortname}(.+?)```", flags=re.DOTALL)
+
     def on_page_markdown(self,
                          markdown: str,
                          page: mkdocs.structure.pages.Page,
                          config: MkDocsConfig,
                          files: mkdocs.structure.files.Files):
-        log = mkdocs.plugins.get_plugin_logger('plantuml-local')
-        plantuml_block = re.compile(rf"(```{self.config.shortname}.+?```)",
-                                     flags=re.DOTALL)
-        plantuml_contents = re.compile(rf"```{self.config.shortname}(.+?)```",
-                                     flags=re.DOTALL)
-        documents = plantuml_block.findall(markdown)
+        log = mkdocs.plugins.get_plugin_logger(__name__)
+        self._check_dependencies()
+
+        documents = self.plantuml_block.findall(markdown)
 
         if documents:
             log.info(f'Found {len(documents)} plantuml block(s) in {page.file.src_path}')
 
         for document in documents:
             with tempfile.TemporaryDirectory() as temp:
-                plantuml = plantuml_contents.findall(document)[0]
+                plantuml = self.plantuml_contents.findall(document)[0]
                 plantuml = plantuml.split("\n")
                 plantuml.insert(2, f'skinparam backgroundcolor {self.config.background_colour}')
                 plantuml = "\n".join(plantuml)
@@ -50,6 +60,13 @@ class PlantUMLLocal(mkdocs.plugins.BasePlugin[PlantUMLLocalConfig]):
                 markdown = markdown.replace(document, svg)
 
         return markdown
+
+    def _check_dependencies(self):
+        if not self._dependencies_checked:
+            if None in [shutil.which('java'), shutil.which('dot')]:
+                raise mkdocs.exceptions.PluginError('Both java and dot must be available, try '
+                                                    'installing openjdk and graphviz')
+        self._dependencies_checked = True
 
     @staticmethod
     def _write_file(path, content):
