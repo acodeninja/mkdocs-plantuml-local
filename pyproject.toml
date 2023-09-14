@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mkdocs-plantuml-local"
-version = "0.2.0"
+version = "0.2.1"
 description = "Render PlantUML diagrams without sending sensitive data to a public server"
 authors = ["Lawrence <lawrence@acode.ninja>"]
 license = "MIT"

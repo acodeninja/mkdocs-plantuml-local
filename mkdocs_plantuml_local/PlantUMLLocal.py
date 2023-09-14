@@ -59,7 +59,8 @@ class PlantUMLLocal(mkdocs.plugins.BasePlugin[PlantUMLLocalConfig]):
     def _render_svg(self, plantuml):
         with tempfile.TemporaryDirectory() as temp:
             plantuml = plantuml.split("\n")
-            plantuml.insert(2, f'skinparam backgroundcolor {self.config.background_colour}')
+            plantuml.insert(plantuml.index('@enduml'),
+                            f'skinparam backgroundcolor {self.config.background_colour}')
             plantuml = "\n".join(plantuml)
             puml_path = os.path.join(temp, 'diagram.puml')
             self._write_file(puml_path, plantuml)
