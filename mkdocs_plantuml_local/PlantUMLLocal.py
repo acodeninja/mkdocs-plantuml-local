@@ -79,7 +79,10 @@ class PlantUMLLocal(mkdocs.plugins.BasePlugin[PlantUMLLocalConfig]):
                 file for file in os.listdir(temp) if file.endswith('.svg')))
             svg = self._read_file(svg_path)
             svg = svg.replace('<?xml version="1.0" encoding="us-ascii" standalone="no"?>', '')
-            return etree.XML(svg)
+            svg = etree.XML(svg)
+            svg.attrib['preserveAspectRatio'] = "xMidYMid"
+
+            return svg
 
     def _check_dependencies(self):
         if not self._dependencies_checked:
