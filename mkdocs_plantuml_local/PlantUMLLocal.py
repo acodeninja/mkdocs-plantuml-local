@@ -61,8 +61,13 @@ class PlantUMLLocal(mkdocs.plugins.BasePlugin[PlantUMLLocalConfig]):
     def _render_svg(self, plantuml):
         with tempfile.TemporaryDirectory() as temp:
             plantuml = plantuml.split("\n")
-            plantuml.insert(plantuml.index('@enduml'),
-                            f'skinparam backgroundcolor {self.config.background_colour}')
+            try:
+                plantuml.insert(plantuml.index('@enduml'),
+                                f'skinparam backgroundcolor {self.config.background_colour}')
+            except ValueError:
+                self.logger.warning('Diagram does not contain UML, skipping set '
+                                    f'{self.config.background_colour} background')
+
             plantuml = "\n".join(plantuml)
             puml_path = os.path.join(temp, 'diagram.puml')
             self._write_file(puml_path, plantuml)
