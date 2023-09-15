@@ -1,3 +1,5 @@
+import shlex
+
 from lxml import etree
 import mkdocs.config.config_options
 import mkdocs.config.defaults
@@ -47,7 +49,7 @@ class PlantUMLLocal(mkdocs.plugins.BasePlugin[PlantUMLLocalConfig]):
                 start_time = time.time() * 1000
                 svg = self._render_svg(plantuml)
                 end_time = time.time() * 1000
-                self.logger.info(f'Rendered diagram {index+1} '
+                self.logger.info(f'Rendered diagram {index + 1} '
                                  f'of page {page.file.src_path} '
                                  f'in {end_time - start_time}ms')
                 block.getparent().replace(block, svg)
@@ -65,10 +67,11 @@ class PlantUMLLocal(mkdocs.plugins.BasePlugin[PlantUMLLocalConfig]):
             puml_path = os.path.join(temp, 'diagram.puml')
             self._write_file(puml_path, plantuml)
 
-            proc = subprocess.run(f"{shutil.which('java')} -jar "
-                                  f"{os.path.dirname(__file__)}/plantuml.jar "
-                                  f"{puml_path} "
-                                  "-tsvg".split(' '))
+            proc = subprocess.run(shlex.split(f"{shutil.which('java')} "
+                                              f"-Djava.awt.headless=true "
+                                              f"-jar {os.path.dirname(__file__)}/plantuml.jar "
+                                              f"{puml_path} "
+                                              "-tsvg"))
 
             if proc.returncode != 0:
                 self.logger.error(proc.stderr)
