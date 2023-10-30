@@ -89,6 +89,7 @@ class PlantUMLLocal(mkdocs.plugins.BasePlugin[PlantUMLLocalConfig]):
             svg = svg.replace('<?xml version="1.0" encoding="us-ascii" standalone="no"?>', '')
             svg = etree.XML(svg)
             svg.attrib['preserveAspectRatio'] = "xMidYMid"
+            svg.attrib['style'] = "width: auto; height: auto;"
 
             return svg
 
