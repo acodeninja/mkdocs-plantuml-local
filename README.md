@@ -28,6 +28,10 @@ plugins:
       # background_colour sets the background
       # fill colour used, defaults to `transparent`
       background_colour: white
+      # class_name is the css class to assign to the
+      # rendered svg diagram, by default no class
+      # name is set.
+      class_name: plantuml-diagram
 markdown_extensions:
   - pymdownx.superfences:
       custom_fences:

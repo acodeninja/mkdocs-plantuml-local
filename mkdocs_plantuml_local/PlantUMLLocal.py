@@ -18,6 +18,9 @@ import time
 class PlantUMLLocalConfig(mkdocs.config.base.Config):
     shortname = mkdocs.config.config_options.Type(str, default='plantuml')
     background_colour = mkdocs.config.config_options.Type(str, default='transparent')
+    class_name = mkdocs.config.config_options.Optional(
+        mkdocs.config.config_options.Type(str, default=None),
+    )
 
 
 class PlantUMLLocal(mkdocs.plugins.BasePlugin[PlantUMLLocalConfig]):
@@ -90,6 +93,9 @@ class PlantUMLLocal(mkdocs.plugins.BasePlugin[PlantUMLLocalConfig]):
             svg = etree.XML(svg)
             svg.attrib['preserveAspectRatio'] = "xMidYMid"
             svg.attrib['style'] = "width: auto; height: auto;"
+
+            if self.config.class_name:
+                svg.attrib['class'] = self.config.class_name
 
             return svg
 
