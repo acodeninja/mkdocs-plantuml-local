@@ -25,9 +25,7 @@ class PlantUMLLocalConfig(mkdocs.config.base.Config):
     class_name = mkdocs.config.config_options.Optional(
         mkdocs.config.config_options.Type(str, default=None),
     )
-    cache = mkdocs.config.config_options.Optional(
-        mkdocs.config.config_options.Type(bool, default=False),
-    )
+    cache = mkdocs.config.config_options.Type(bool, default=False)
 
 
 class PlantUMLLocal(mkdocs.plugins.BasePlugin[PlantUMLLocalConfig]):
