@@ -32,6 +32,11 @@ plugins:
       # rendered svg diagram, by default no class
       # name is set.
       class_name: plantuml-diagram
+      # cache, when set to true, will cache rendered
+      # diagrams under the folder `.cache`. Not
+      # recommended for use in CI, so add `.cache`
+      # to your .gitignore
+      cache: true
 markdown_extensions:
   - pymdownx.superfences:
       custom_fences:
