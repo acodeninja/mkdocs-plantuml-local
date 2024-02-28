@@ -1,6 +1,6 @@
 import pytest
 
-from mkdocs_plantuml_local.hash import hash_string, hash_list
+from mkdocs_plantuml_local.hashing import hash_string, hash_list
 
 
 @pytest.mark.parametrize('string,output', [
