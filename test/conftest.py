@@ -1,4 +1,7 @@
+import tempfile
 from pathlib import Path
+from unittest import mock
+from unittest.mock import patch
 
 import pytest
 
@@ -8,8 +11,16 @@ from mkdocs_plantuml_local.config import PlantUMLLocalConfig
 
 @pytest.fixture(scope="function", autouse=True)
 def setup_fixtures(fs):
-    fs.add_real_directory(Path(__file__).parent.joinpath("fixtures"))
-    yield fs
+    temp = tempfile.TemporaryDirectory()
+    temp.name = '/temporary/test'
+    Path(temp.name).mkdir(parents=True, exist_ok=True)
+    with mock.patch.object(tempfile, "TemporaryDirectory", return_value=temp):
+        fixtures_path = Path(__file__).parent.joinpath("fixtures")
+        fs.add_real_directory(fixtures_path)
+        fs.add_real_file(fixtures_path.joinpath("rendered_sample.svg"),
+                         False,
+                         Path(temp.name).joinpath("diagram.svg"))
+        yield fixtures_path
 
 
 @pytest.fixture(scope="function")
