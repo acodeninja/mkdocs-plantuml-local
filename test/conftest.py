@@ -2,7 +2,8 @@ from pathlib import Path
 
 import pytest
 
-from mkdocs_plantuml_local.PlantUMLLocal import PlantUMLLocalConfig, PlantUMLLocal
+from mkdocs_plantuml_local.PlantUMLLocal import PlantUMLLocal
+from mkdocs_plantuml_local.config import PlantUMLLocalConfig
 
 
 @pytest.fixture(scope="function", autouse=True)

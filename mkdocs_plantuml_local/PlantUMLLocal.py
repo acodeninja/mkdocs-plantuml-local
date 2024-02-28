@@ -18,14 +18,8 @@ from hashlib import sha256
 from lxml import etree
 from pathlib import Path
 
-
-class PlantUMLLocalConfig(mkdocs.config.base.Config):
-    shortname = mkdocs.config.config_options.Type(str, default='plantuml')
-    background_colour = mkdocs.config.config_options.Type(str, default='transparent')
-    class_name = mkdocs.config.config_options.Optional(
-        mkdocs.config.config_options.Type(str, default=None),
-    )
-    cache = mkdocs.config.config_options.Type(bool, default=False)
+from mkdocs_plantuml_local.config import PlantUMLLocalConfig
+from mkdocs_plantuml_local.hashing import hash_list
 
 
 class PlantUMLLocal(mkdocs.plugins.BasePlugin[PlantUMLLocalConfig]):
