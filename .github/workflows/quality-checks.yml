@@ -44,6 +44,14 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - name: actions/setup-graphviz
+        run: |
+          sudo apt-get update
+          sudo apt-get install -qy graphviz
       - run: pip install poetry
       - run: poetry install
       - run: poetry run pytest ./test/integration
