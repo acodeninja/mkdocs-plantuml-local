@@ -1,21 +1,25 @@
 import json
-import re
+import logging
 import time
 
 from lxml import etree
-from mkdocs.plugins import BasePlugin, get_plugin_logger
+import mkdocs.plugins
 from mkdocs.config.defaults import MkDocsConfig
 from mkdocs.structure.pages import Page
 
-from mkdocs_plantuml_local.caching import has_cache, get_cache, put_cache
+from mkdocs_plantuml_local.caching import get_cache, put_cache
 from mkdocs_plantuml_local.config import MkDocsPluginPlantUMLLocalConfig
 from mkdocs_plantuml_local.dependencies import check_dependencies
 from mkdocs_plantuml_local.render import render
+import mkdocs_plantuml_local.logging
 
 
-class MkDocsPluginPlantUMLLocal(BasePlugin[MkDocsPluginPlantUMLLocalConfig]):
+class MkDocsPluginPlantUMLLocal(mkdocs.plugins.BasePlugin[MkDocsPluginPlantUMLLocalConfig]):
     def __init__(self):
-        self.logger = get_plugin_logger(__name__)
+        if hasattr(mkdocs.plugins, 'get_plugin_logger'):
+            self.logger = getattr(mkdocs.plugins, 'get_plugin_logger')(__name__)
+        else:
+            self.logger = mkdocs_plantuml_local.logging.get_plugin_logger(__name__)
 
     def on_config(self, config: MkDocsConfig) -> MkDocsConfig:
         check_dependencies()
