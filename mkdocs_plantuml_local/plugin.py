@@ -28,9 +28,7 @@ class MkDocsPluginPlantUMLLocal(
         check_dependencies()
         return config
 
-    def on_post_page(
-        self, output: str, *, page: Page, config: MkDocsConfig
-    ) -> str | None:
+    def on_post_page(self, output: str, *, page: Page, config: MkDocsConfig) -> str:
         html = etree.HTML(output)
 
         for index, block in enumerate(html.cssselect(f"pre.{self.config.shortname}")):
