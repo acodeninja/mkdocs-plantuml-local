@@ -14,7 +14,7 @@ include = [
 ]
 
 [tool.poetry.plugins."mkdocs.plugins"]
-"plantuml-local" = "mkdocs_plantuml_local.PlantUMLLocal:PlantUMLLocal"
+"plantuml-local" = "mkdocs_plantuml_local.plugin:MkDocsPluginPlantUMLLocal"
 
 [tool.poetry.build]
 generate-setup-file = false

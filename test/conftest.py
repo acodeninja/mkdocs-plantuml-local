@@ -1,12 +1,16 @@
 import tempfile
 from pathlib import Path
 from unittest import mock
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 
+import mkdocs.config
 import pytest
+from mkdocs.config.defaults import MkDocsConfig
+from mkdocs.structure.pages import Page
+from mkdocs.structure.files import File
 
-from mkdocs_plantuml_local.PlantUMLLocal import PlantUMLLocal
-from mkdocs_plantuml_local.config import PlantUMLLocalConfig
+from mkdocs_plantuml_local.plugin import MkDocsPluginPlantUMLLocal
+from mkdocs_plantuml_local.config import MkDocsPluginPlantUMLLocalConfig
 
 
 @pytest.fixture(scope="function", autouse=True)
@@ -29,15 +33,39 @@ def plugin_factory():
                           background_colour='transparent',
                           class_name=None,
                           cache=False):
-        config = PlantUMLLocalConfig()
+        config = MkDocsPluginPlantUMLLocalConfig()
         config.shortname = shortname
         config.background_colour = background_colour
         config.cache = cache
         if class_name:
             config.class_name = class_name
 
-        plugin = PlantUMLLocal()
+        plugin = MkDocsPluginPlantUMLLocal()
         plugin.config = config
         return plugin
 
     yield make_plugin_class
+
+
+@pytest.fixture(scope='function')
+def mock_page(plugin_factory):
+    class MockPage(Page):
+        pass
+
+    class MockFile(File):
+        pass
+
+    yield MockPage(title='title',
+                   file=MockFile(path="file",
+                                 src_dir='/source',
+                                 dest_dir='/destination',
+                                 use_directory_urls=False),
+                   config=MkDocsConfig())
+
+
+@pytest.fixture(scope='function', autouse=True)
+def mock_logger():
+    with patch('mkdocs_plantuml_local.plugin.get_plugin_logger') as get_logger:
+        logger = MagicMock()
+        get_logger.return_value = logger
+        yield logger

@@ -20,8 +20,6 @@ def render(plantuml):
 
         output_path = Path(temp).joinpath('diagram.svg')
 
-        print([f for f in Path(temp).glob('*')])
-
         if proc.returncode != 0 or not output_path.exists():
             raise mkdocs.exceptions.PluginError('PlantUML failed to build the diagram, check '
                                                 'the logs above for more information.')

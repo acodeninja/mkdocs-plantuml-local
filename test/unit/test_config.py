@@ -1,8 +1,8 @@
-from mkdocs_plantuml_local.config import PlantUMLLocalConfig
+from mkdocs_plantuml_local.config import MkDocsPluginPlantUMLLocalConfig
 
 
 def test_mkdocs_configuration_defaults():
-    config = PlantUMLLocalConfig()
+    config = MkDocsPluginPlantUMLLocalConfig()
 
     # parameters: with defaults
     assert config.cache is False

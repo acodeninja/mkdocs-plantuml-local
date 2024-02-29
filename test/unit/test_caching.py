@@ -41,20 +41,20 @@ def test_get_cache_when_cache_present(hashed_list, fs):
         Path(getcwd()).joinpath(".cache", "plantuml_local", *hashed_list),
         contents="CACHE!",
     )
-    assert get_cache(*hashed_list) == b'CACHE!'
+    assert get_cache(*hashed_list) == 'CACHE!'
 
 
-def test_put_cache_when_no_cache_present(hashed_list, fs):
-    put_cache(b'NEW CACHE!', hashed_list)
+def test_put_cache_when_no_cache_present(hashed_list):
+    put_cache('NEW CACHE!', hashed_list)
     expected_path = Path(getcwd()).joinpath(".cache", "plantuml_local", *hashed_list)
 
-    assert expected_path.read_bytes() == b'NEW CACHE!'
+    assert expected_path.read_text() == 'NEW CACHE!'
 
 
 def test_put_cache_when_cache_present(hashed_list, fs):
     expected_path = Path(getcwd()).joinpath(".cache", "plantuml_local", *hashed_list)
     fs.create_file(expected_path, contents="CACHE!")
 
-    put_cache(b'NEW CACHE!', hashed_list)
+    put_cache('NEW CACHE!', hashed_list)
 
-    assert expected_path.read_bytes() == b'NEW CACHE!'
+    assert expected_path.read_text() == 'NEW CACHE!'

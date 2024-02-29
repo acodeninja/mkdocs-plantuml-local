@@ -13,10 +13,10 @@ def has_cache(*data) -> bool:
     return get_cache_path(*data).exists()
 
 
-def get_cache(*data) -> bytes:
+def get_cache(*data) -> str:
     path = get_cache_path(*data)
     if path.exists():
-        return path.read_bytes()
+        return path.read_text()
 
 
 def put_cache(contents, *data):
@@ -25,4 +25,4 @@ def put_cache(contents, *data):
     if not path.parent.exists():
         path.parent.mkdir(parents=True)
 
-    path.write_bytes(contents)
+    path.write_text(contents)
