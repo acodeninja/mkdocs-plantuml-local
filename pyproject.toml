@@ -3,6 +3,7 @@ name = "mkdocs-plantuml-local"
 version = "0.5.0"
 description = "Render PlantUML diagrams without sending sensitive data to a public server"
 authors = ["Lawrence <lawrence@acode.ninja>"]
+homepage = "https://github.com/acodeninja/mkdocs-plantuml-local"
 license = "MIT"
 readme = "README.md"
 
