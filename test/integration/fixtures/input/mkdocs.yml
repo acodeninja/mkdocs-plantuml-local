@@ -1,0 +1,15 @@
+site_name: "Test"
+
+plugins:
+  - plantuml-local:
+      shortname: puml
+      background_colour: white
+      class_name: plantuml-diagram
+      cache: true
+
+markdown_extensions:
+  - pymdownx.superfences:
+      custom_fences:
+        - name: puml
+          class: puml
+          format: !!python/name:pymdownx.superfences.fence_code_format

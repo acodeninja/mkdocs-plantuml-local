@@ -22,7 +22,7 @@ markdown_extensions:
 ```yaml
 plugins:
   - plantuml-local:
-      # shortname is language used to identify 
+      # shortname is language used to identify
       # blocks to process, defaults to `plantuml`
       shortname: puml
       # background_colour sets the background
