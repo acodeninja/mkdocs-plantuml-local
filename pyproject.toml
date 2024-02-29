@@ -21,7 +21,7 @@ generate-setup-file = false
 script = "build.py"
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = ">= 3.9"
 mkdocs = "^1.5.2"
 lxml = "^5.1.0"
 cssselect = "^1.2.0"
