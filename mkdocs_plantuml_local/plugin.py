@@ -13,9 +13,9 @@ from mkdocs_plantuml_local.config import MkDocsPluginPlantUMLLocalConfig
 from mkdocs_plantuml_local.dependencies import check_dependencies
 from mkdocs_plantuml_local.render import render
 
-get_plugin_logger = getattr(mkdocs.plugins,
-                            "get_plugin_logger",
-                            mkdocs_plantuml_local.logging.get_plugin_logger)
+get_plugin_logger = getattr(
+    mkdocs.plugins, "get_plugin_logger", mkdocs_plantuml_local.logging.get_plugin_logger
+)
 
 
 class MkDocsPluginPlantUMLLocal(
