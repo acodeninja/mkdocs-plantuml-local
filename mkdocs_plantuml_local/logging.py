@@ -1,5 +1,6 @@
 import logging
-from typing import MutableMapping, Any
+from typing import Any
+from typing import MutableMapping
 
 # Taken from https://github.com/mkdocs/mkdocs/blob/1.5.3/mkdocs/plugins.py
 # TODO: Can be removed when support for 1.4.3 is dropped with the release of 1.6.0
@@ -34,7 +35,8 @@ class PrefixedLogger(logging.LoggerAdapter):
 
 
 def get_plugin_logger(name: str) -> PrefixedLogger:
-    """Return a logger for plugins.
+    """
+    Return a logger for plugins.
 
     Arguments:
         name: The name to use with `logging.getLogger`.
